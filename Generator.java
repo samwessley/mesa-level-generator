@@ -150,13 +150,13 @@ public class Generator {
                             
                             // Check each tile cell in the tile to make sure it's in a valid place
                             for (int j = 0; j < tile.coords.length; j++) {
-                                int x = tile.coords[j][1];
-                                int y = tile.coords[j][0];
+                                int x = tile.coords[j][0];
+                                int y = tile.coords[j][1];
         
                                 // First check that the tile coords are within the board
-                                if ((blueCornerCellArray[i][1] + x) < board.length && (blueCornerCellArray[i][0] + y) < board[0].length && (blueCornerCellArray[i][1] + x) >= 0 && (blueCornerCellArray[i][0] + y) >= 0) {
+                                if ((blueCornerCellArray[i][0] + x) < board.length && (blueCornerCellArray[i][1] + y) < board[0].length && (blueCornerCellArray[i][0] + x) >= 0 && (blueCornerCellArray[i][1] + y) >= 0) {
                                     // If the tile cell is covering an occupied cell, don't place the tile
-                                    if (board[blueCornerCellArray[i][1] + x][blueCornerCellArray[i][0] + y] != '0') {
+                                    if (board[blueCornerCellArray[i][0] + x][blueCornerCellArray[i][1] + y] != '0') {
                                         tilePlaced = false;
                                     }
                                 } else {
@@ -165,7 +165,7 @@ public class Generator {
         
                                 // If the tile is touching any side cells, don't place it
                                 for (int[] sideCell : blueSideCells) {
-                                    if (blueCornerCellArray[i][1] + x == sideCell[1] && blueCornerCellArray[i][0] + y == sideCell[0]) {
+                                    if (blueCornerCellArray[i][0] + x == sideCell[0] && blueCornerCellArray[i][1] + y == sideCell[1]) {
                                         tilePlaced = false;
                                     }
                                 }
