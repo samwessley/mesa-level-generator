@@ -3,6 +3,7 @@ import java.util.*;
 public class Generator {
 
     int boardSize = 5;
+    int maxIterations = 200;
 
     char[][] board;
     Tile[] tiles = new Tile[21];
@@ -39,11 +40,15 @@ public class Generator {
 
         placeTiles("red");
         placeTiles("blue");
+        fillVacantCells();
+        printBoard();
     }
 
     private void placeTiles(String color) {
 
         int tilesPlaced = 0;
+        int iterations = 0;
+
         while (tilesPlaced < 2) {
 
             // Get a random red tile from the list
@@ -97,9 +102,7 @@ public class Generator {
 
                 if (color == "red") {
 
-                    int iterations =  0;
-
-                    if (iterations < 50) {
+                    if (iterations < maxIterations) {
                         // Loop through corner cells and try to place tile on one of them
                         Collections.shuffle(redCornerCells);
                         int[][] redCornerCellArray = new int[redCornerCells.size()][2];
@@ -145,9 +148,7 @@ public class Generator {
                     
                 } else if (color == "blue") {
 
-                    int iterations = 0;
-
-                    if (iterations < 50) {
+                    if (iterations < maxIterations) {
                         // Loop through corner cells and try to place tile on one of them
                         Collections.shuffle(blueCornerCells);
                         int[][] blueCornerCellArray = new int[blueCornerCells.size()][2];
@@ -193,9 +194,7 @@ public class Generator {
                     
                 } else {
 
-                    int iterations = 0;
-
-                    if (iterations < 50) {
+                    if (iterations < maxIterations) {
                         // Loop through corner cells and try to place tile on one of them
                         Collections.shuffle(yellowCornerCells);
                         int[][] yellowCornerCellArray = new int[yellowCornerCells.size()][2];
@@ -245,23 +244,8 @@ public class Generator {
             CleanUpCornerAndSideCells("blue");
             CleanUpCornerAndSideCells("yellow");
 
-            System.out.println("Board status:");
-            for (int i = 0; i < board.length; i++) {
-                for (int j = 0; j < board[0].length; j++) {
-                    System.out.print(board[i][j]);
-                }
-                System.out.println();
-            }
-        }
-
-        // Randomly fill the remaining empty cells with borders
-        for (int i = 0; i < board.length; i++) {
-            for (int j = 0; j < board[0].length; j++) {
-                if (board[i][j] == '0') {
-                    Random rd = new Random();
-                    if (rd.nextBoolean())
-                    board[i][j] = '1';
-                }
+            if (iterations == maxIterations) {
+                break;
             }
         }
         
@@ -276,6 +260,10 @@ public class Generator {
         for (int[] coords : redCornerCells) {
             System.out.println(coords[1] + ", " + coords[0]);
         }
+
+        if (tilesPlaced < 2) {
+            System.out.println("Could not generate board.");
+        }
     }
 
     public int[] getRandomLocationOnBoard(char[][] board) {
@@ -284,6 +272,29 @@ public class Generator {
         int random2 = new Random().nextInt(board[0].length);
 
         return new int[] {random1,random2};
+    }
+
+    public void fillVacantCells() {
+        // Randomly fill the remaining empty cells with borders
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] == '0') {
+                    Random rd = new Random();
+                    if (rd.nextBoolean())
+                    board[i][j] = '1';
+                }
+            }
+        }
+    }
+
+    public void printBoard() {
+        System.out.println("Board status:");
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                System.out.print(board[i][j]);
+            }
+            System.out.println();
+        }
     }
 
     public void createBoards() {
