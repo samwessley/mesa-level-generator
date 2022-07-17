@@ -50,9 +50,15 @@ public class Generator {
             Tile tile = GetRandomTile(color);
 
             // Rotate tile n times between 0 and 3
-            tile.rotate();
-            tile.reflect();
+            int rnd = new Random().nextInt(4);
+            for (int i = 0; i < rnd; i++) {
+                tile.rotate();
+            }
+
             // Decide randomly to flip tile or not
+            Random rd = new Random();
+            if (rd.nextBoolean())
+            tile.reflect();
 
             // If this is the first red tile placed...
             if (tilesPlaced == 0) {
@@ -245,6 +251,17 @@ public class Generator {
                     System.out.print(board[i][j]);
                 }
                 System.out.println();
+            }
+        }
+
+        // Randomly fill the remaining empty cells with borders
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                if (board[i][j] == '0') {
+                    Random rd = new Random();
+                    if (rd.nextBoolean())
+                    board[i][j] = '1';
+                }
             }
         }
         
