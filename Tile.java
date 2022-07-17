@@ -7,4 +7,20 @@ public class Tile {
         name = n;
         coords = c;
     }
+
+    public void rotate() {
+        for (int i = 0; i < coords.length; i++) {
+            int oldX = coords[i][0];
+            int oldY = coords[i][1];
+
+            coords[i][0] = -oldY;
+            coords[i][1] = oldX;
+        }
+    }
+
+    public void reflect() {
+        for (int i = 0; i < coords.length; i++) {
+            coords[i][0] = coords[i][0];
+        }
+    }
 }

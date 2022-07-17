@@ -50,6 +50,8 @@ public class Generator {
             Tile tile = GetRandomTile(color);
 
             // Rotate tile n times between 0 and 3
+            tile.rotate();
+            tile.reflect();
             // Decide randomly to flip tile or not
 
             // If this is the first red tile placed...
