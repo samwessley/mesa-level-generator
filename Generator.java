@@ -1,9 +1,13 @@
 import java.util.*;
+import java.io.FileWriter; 
+import java.io.IOException;
 
 public class Generator {
 
-    int boardSize = 5;
-    int maxIterations = 200;
+    int boardSize = 8;
+    int numberOfColors = 0;
+    int levelsToGenerate = 3;
+    int maxIterations = 900;
 
     char[][] board;
     Tile[] tiles = new Tile[21];
@@ -34,22 +38,32 @@ public class Generator {
 
     public void generateLevels() {
         populateTileNumberLists();
-        createBoards();
+        createBoard(boardSize);
         createTileMaps();
         createTileArray();
 
-        placeTiles("red");
-        placeTiles("blue");
-        fillVacantCells();
-        printBoard();
+        int levelsGenerated = 0;
+        while (levelsGenerated < levelsToGenerate) {
+            if (placeTiles("red") && placeTiles("blue") && placeTiles("yellow")) {
+                fillVacantCells();
+                generateFile(levelsGenerated + 1);
+                printBoard();
+                levelsGenerated += 1;
+
+                populateTileNumberLists();
+                createBoard(boardSize);
+                createTileMaps();
+                createTileArray();
+            }
+        }
     }
 
-    private void placeTiles(String color) {
+    private boolean placeTiles(String color) {
 
         int tilesPlaced = 0;
         int iterations = 0;
 
-        while (tilesPlaced < 2) {
+        while (tilesPlaced < 3) {
 
             // Get a random red tile from the list
             Tile tile = GetRandomTile(color);
@@ -140,7 +154,6 @@ public class Generator {
                                 CreateSideAndCornerCellList(tile, color, redCornerCellArray[i]);
                                 System.out.println(redCornerCellArray[i][1] + ", " + redCornerCellArray[i][0]);
                                 tilesPlaced += 1;
-                                break;
                             }
                         }
                         iterations += 1;
@@ -186,7 +199,6 @@ public class Generator {
                                 CreateSideAndCornerCellList(tile, color, blueCornerCellArray[i]);
                                 System.out.println(blueCornerCellArray[i][1] + ", " + blueCornerCellArray[i][0]);
                                 tilesPlaced += 1;
-                                break;
                             }
                         }
                         iterations += 1;
@@ -205,13 +217,13 @@ public class Generator {
                             
                             // Check each tile cell in the tile to make sure it's in a valid place
                             for (int j = 0; j < tile.coords.length; j++) {
-                                int x = tile.coords[j][1];
-                                int y = tile.coords[j][0];
+                                int x = tile.coords[j][0];
+                                int y = tile.coords[j][1];
         
                                 // First check that the tile coords are within the board
-                                if ((yellowCornerCellArray[i][1] + x) < board.length && (yellowCornerCellArray[i][0] + y) < board[0].length && (yellowCornerCellArray[i][1] + x) >= 0 && (yellowCornerCellArray[i][0] + y) >= 0) {
+                                if ((yellowCornerCellArray[i][0] + x) < board.length && (yellowCornerCellArray[i][1] + y) < board[0].length && (yellowCornerCellArray[i][0] + x) >= 0 && (yellowCornerCellArray[i][1] + y) >= 0) {
                                     // If the tile cell is covering an occupied cell, don't place the tile
-                                    if (board[yellowCornerCellArray[i][1] + x][yellowCornerCellArray[i][0] + y] != '0') {
+                                    if (board[yellowCornerCellArray[i][0] + x][yellowCornerCellArray[i][1] + y] != '0') {
                                         tilePlaced = false;
                                     }
                                 } else {
@@ -220,7 +232,7 @@ public class Generator {
         
                                 // If the tile is touching any side cells, don't place it
                                 for (int[] sideCell : yellowSideCells) {
-                                    if (yellowCornerCellArray[i][1] + x == sideCell[1] && yellowCornerCellArray[i][0] + y == sideCell[0]) {
+                                    if (yellowCornerCellArray[i][0] + x == sideCell[0] && yellowCornerCellArray[i][1] + y == sideCell[1]) {
                                         tilePlaced = false;
                                     }
                                 }
@@ -232,7 +244,6 @@ public class Generator {
                                 CreateSideAndCornerCellList(tile, color, yellowCornerCellArray[i]);
                                 System.out.println(yellowCornerCellArray[i][1] + ", " + yellowCornerCellArray[i][0]);
                                 tilesPlaced += 1;
-                                break;
                             }
                         }
                         iterations += 1;
@@ -245,11 +256,11 @@ public class Generator {
             CleanUpCornerAndSideCells("yellow");
 
             if (iterations == maxIterations) {
-                break;
+                return false;
             }
         }
         
-        // Print redSideCells
+        /*// Print redSideCells
         System.out.println("redSideCells:");
         for (int[] coords : redSideCells) {
             System.out.println(coords[1] + ", " + coords[0]);
@@ -259,15 +270,40 @@ public class Generator {
         System.out.println("redCornerCells:");
         for (int[] coords : redCornerCells) {
             System.out.println(coords[1] + ", " + coords[0]);
-        }
+        }*/
 
-        if (tilesPlaced < 2) {
+        if (tilesPlaced < 3) {
             System.out.println("Could not generate board.");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private void generateFile(int levelNumber) {
+        try {
+            // Create a new FileWriter object with name of level
+            FileWriter myWriter = new FileWriter(levelNumber + ".txt");
+            String text = "";
+
+            // Loop through board and append each character to the string
+            for (int i = 0; i < board.length; i++) {
+                for (int j = 0; j < board[0].length; j++) {
+                    text += board[i][j];
+                }
+                text += "\n";
+            }
+
+            // Write the string to the file
+            myWriter.write(text);
+            myWriter.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
         }
     }
 
     public int[] getRandomLocationOnBoard(char[][] board) {
-        
         int random1 = new Random().nextInt(board.length);
         int random2 = new Random().nextInt(board[0].length);
 
@@ -297,12 +333,13 @@ public class Generator {
         }
     }
 
-    public void createBoards() {
-        board = new char[][] {{'0','0','0','0','0'},
-                              {'0','0','0','0','0'},
-                              {'0','0','0','0','0'},
-                              {'0','0','0','0','0'},
-                              {'0','0','0','0','0'}};
+    public void createBoard(int size) {
+        board = new char[size][size];
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[0].length; j++) {
+                board[i][j] = '0';
+            }
+        }
     }
 
     public void createTileMaps() {
@@ -622,21 +659,6 @@ public class Generator {
                 }
             }
         }
-
-        /*// Remove side cells that are part of the tile
-        int[][] sideCellListArray = new int[sideCellList.size()][2];
-        sideCellListArray = sideCellList.toArray(sideCellListArray);
-        for (int g = 0; g < sideCellListArray.length; g++) {
-            for (int j = 0; j < tile.coords.length; j++) {
-
-                int x = tile.coords[j][0];
-                int y = tile.coords[j][1];
-
-                if (sideCellListArray[g][0] == (randomCoords[1] + x) && sideCellListArray[g][1] == (randomCoords[0] + y)) {
-                    sideCellList.remove(sideCellListArray[g]);
-                }
-            }
-        }*/
 
         // Remove corner cells that are part of the tile
         int[][] cornerCellListArray = new int[cornerCellList.size()][2];

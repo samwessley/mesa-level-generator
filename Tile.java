@@ -20,7 +20,7 @@ public class Tile {
 
     public void reflect() {
         for (int i = 0; i < coords.length; i++) {
-            coords[i][0] = coords[i][0];
+            coords[i][0] = -coords[i][0];
         }
     }
 }
