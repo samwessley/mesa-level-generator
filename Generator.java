@@ -44,16 +44,25 @@ public class Generator {
 
         int levelsGenerated = 0;
         while (levelsGenerated < levelsToGenerate) {
+            redCornerCells = new ArrayList<int[]>();
+            redSideCells = new ArrayList<int[]>();
+            blueCornerCells = new ArrayList<int[]>();
+            blueSideCells = new ArrayList<int[]>();
+            yellowCornerCells = new ArrayList<int[]>();
+            yellowSideCells = new ArrayList<int[]>();
+
+            redTileNumbers = new ArrayList<Integer>();
+            blueTileNumbers = new ArrayList<Integer>();
+            yellowTileNumbers = new ArrayList<Integer>();
+            populateTileNumberLists();
+            createBoard(boardSize);
+            createTileArray();
+
             if (placeTiles("red") && placeTiles("blue") && placeTiles("yellow")) {
                 fillVacantCells();
                 generateFile(levelsGenerated + 1);
                 printBoard();
                 levelsGenerated += 1;
-
-                populateTileNumberLists();
-                createBoard(boardSize);
-                createTileMaps();
-                createTileArray();
             }
         }
     }
@@ -79,7 +88,7 @@ public class Generator {
             if (rd.nextBoolean())
             tile.reflect();
 
-            // If this is the first red tile placed...
+            // If this is the first tile placed...
             if (tilesPlaced == 0) {
 
                 // Generate random location on the board
@@ -111,6 +120,7 @@ public class Generator {
                     // Create a list of sideCells and cornerCells for this tile
                     CreateSideAndCornerCellList(tile, color, randomCoords);
                     tilesPlaced += 1;
+                    printBoard();
                 }
             } else {
 
@@ -127,13 +137,13 @@ public class Generator {
                             
                             // Check each tile cell in the tile to make sure it's in a valid place
                             for (int j = 0; j < tile.coords.length; j++) {
-                                int x = tile.coords[j][1];
-                                int y = tile.coords[j][0];
+                                int x = tile.coords[j][0];
+                                int y = tile.coords[j][1];
         
                                 // First check that the tile coords are within the board
-                                if ((redCornerCellArray[i][1] + x) < board.length && (redCornerCellArray[i][0] + y) < board[0].length && (redCornerCellArray[i][1] + x) >= 0 && (redCornerCellArray[i][0] + y) >= 0) {
+                                if ((redCornerCellArray[i][0] + x) < board.length && (redCornerCellArray[i][1] + y) < board[0].length && (redCornerCellArray[i][0] + x) >= 0 && (redCornerCellArray[i][1] + y) >= 0) {
                                     // If the tile cell is covering an occupied cell, don't place the tile
-                                    if (board[redCornerCellArray[i][1] + x][redCornerCellArray[i][0] + y] != '0') {
+                                    if (board[redCornerCellArray[i][0] + x][redCornerCellArray[i][1] + y] != '0') {
                                         tilePlaced = false;
                                     }
                                 } else {
@@ -142,7 +152,7 @@ public class Generator {
         
                                 // If the tile is touching any side cells, don't place it
                                 for (int[] sideCell : redSideCells) {
-                                    if (redCornerCellArray[i][1] + x == sideCell[1] && redCornerCellArray[i][0] + y == sideCell[0]) {
+                                    if (redCornerCellArray[i][0] + x == sideCell[0] && redCornerCellArray[i][1] + y == sideCell[1]) {
                                         tilePlaced = false;
                                     }
                                 }
@@ -152,11 +162,14 @@ public class Generator {
                             if (tilePlaced) {
                                 // Create a list of sideCells and cornerCells for this tile
                                 CreateSideAndCornerCellList(tile, color, redCornerCellArray[i]);
-                                System.out.println(redCornerCellArray[i][1] + ", " + redCornerCellArray[i][0]);
+                                System.out.println(color + ", " + redCornerCellArray[i][1] + ", " + redCornerCellArray[i][0]);
                                 tilesPlaced += 1;
+                                break;
                             }
                         }
                         iterations += 1;
+                    } else {
+                        return false;
                     }
                     
                 } else if (color == "blue") {
@@ -197,11 +210,14 @@ public class Generator {
                             if (tilePlaced) {
                                 // Create a list of sideCells and cornerCells for this tile
                                 CreateSideAndCornerCellList(tile, color, blueCornerCellArray[i]);
-                                System.out.println(blueCornerCellArray[i][1] + ", " + blueCornerCellArray[i][0]);
+                                System.out.println(color + ", " + blueCornerCellArray[i][1] + ", " + blueCornerCellArray[i][0]);
                                 tilesPlaced += 1;
+                                break;
                             }
                         }
                         iterations += 1;
+                    } else {
+                        return false;
                     }
                     
                 } else {
@@ -242,11 +258,14 @@ public class Generator {
                             if (tilePlaced) {
                                 // Create a list of sideCells and cornerCells for this tile
                                 CreateSideAndCornerCellList(tile, color, yellowCornerCellArray[i]);
-                                System.out.println(yellowCornerCellArray[i][1] + ", " + yellowCornerCellArray[i][0]);
+                                System.out.println(color + ", " + yellowCornerCellArray[i][1] + ", " + yellowCornerCellArray[i][0]);
                                 tilesPlaced += 1;
+                                break;
                             }
                         }
                         iterations += 1;
+                    } else  {
+                        return false;
                     }
                 }
             }
