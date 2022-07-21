@@ -5,7 +5,6 @@ import java.io.IOException;
 public class Generator {
 
     int boardSize = 8;
-    int numberOfColors = 0;
     int levelsToGenerate = 3;
     int maxIterations = 900;
 
@@ -31,7 +30,13 @@ public class Generator {
         Generator generator = new Generator();
 
         // Prompt for board size, number of colors, and number of levels to generate
-        // Set board size, number of colors, number of levels to generate
+        System.out.print("What board size do you want to generate? : ");
+        Scanner scanner = new Scanner(System.in);
+        generator.boardSize = scanner.nextInt();
+
+        System.out.println("");
+        System.out.print("How many levels should we generate? : ");
+        generator.levelsToGenerate = scanner.nextInt();
 
         generator.generateLevels();
     }
@@ -58,11 +63,20 @@ public class Generator {
             createBoard(boardSize);
             createTileArray();
 
-            if (placeTiles("red") && placeTiles("blue") && placeTiles("yellow")) {
-                fillVacantCells();
-                generateFile(levelsGenerated + 1);
-                printBoard();
-                levelsGenerated += 1;
+            if (boardSize < 7) {
+                if (placeTiles("red") && placeTiles("blue")) {
+                    fillVacantCells();
+                    generateFile(levelsGenerated + 1);
+                    printBoard();
+                    levelsGenerated += 1;
+                }
+            } else {
+                if (placeTiles("red") && placeTiles("blue") && placeTiles("yellow")) {
+                    fillVacantCells();
+                    generateFile(levelsGenerated + 1);
+                    printBoard();
+                    levelsGenerated += 1;
+                }
             }
         }
     }
@@ -71,8 +85,26 @@ public class Generator {
 
         int tilesPlaced = 0;
         int iterations = 0;
+        int tilesToPlace = 0;
 
-        while (tilesPlaced < 3) {
+        // Set the number of tiles to place for each color depending on board size
+        if (boardSize == 5) {
+            tilesToPlace = 2;
+        } else if (boardSize == 6) {
+            tilesToPlace = 3;
+        } else if (boardSize == 7) {
+            if (color == "red") {
+                tilesToPlace = 3;
+            } else {
+                tilesToPlace = 2;
+            }
+        } else if (boardSize == 8) {
+            tilesToPlace = 3;
+        } else if (boardSize == 9) {
+            tilesToPlace = 4;
+        }
+
+        while (tilesPlaced < tilesToPlace) {
 
             // Get a random red tile from the list
             Tile tile = GetRandomTile(color);
@@ -291,7 +323,7 @@ public class Generator {
             System.out.println(coords[1] + ", " + coords[0]);
         }*/
 
-        if (tilesPlaced < 3) {
+        if (tilesPlaced < tilesToPlace) {
             System.out.println("Could not generate board.");
             return false;
         } else {
