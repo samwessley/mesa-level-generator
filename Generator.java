@@ -334,7 +334,7 @@ public class Generator {
     private void generateFile(int levelNumber) {
         try {
             // Create a new FileWriter object with name of level
-            FileWriter myWriter = new FileWriter(levelNumber + ".txt");
+            FileWriter myWriter = new FileWriter("levels/" + levelNumber + ".txt");
             String text = "";
 
             // Loop through board and append each character to the string
