@@ -2,6 +2,8 @@ public class Tile {
 
     public int name;
     public int[][] coords;
+    public int rotations = 0;
+    public int reflected = 0;
 
     public Tile(int n, int[][] c) {
         name = n;

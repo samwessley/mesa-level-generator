@@ -9,6 +9,7 @@ public class Generator {
     int maxIterations = 900;
 
     char[][] board;
+    String rotationsReflections = "";
     Tile[] tiles = new Tile[21];
 
     List<int[]> redCornerCells = new ArrayList<int[]>();
@@ -63,7 +64,7 @@ public class Generator {
             createBoard(boardSize);
             createTileArray();
 
-            if (boardSize < 7) {
+            if (boardSize < 5) {
                 if (placeTiles("red") && placeTiles("blue")) {
                     fillVacantCells();
                     generateFile(levelsGenerated + 1);
@@ -111,14 +112,18 @@ public class Generator {
 
             // Rotate tile n times between 0 and 3
             int rnd = new Random().nextInt(4);
+            tile.rotations = rnd;
             for (int i = 0; i < rnd; i++) {
                 tile.rotate();
             }
 
             // Decide randomly to flip tile or not
             Random rd = new Random();
-            if (rd.nextBoolean())
-            tile.reflect();
+            Boolean rd1 = rd.nextBoolean();
+            if (rd1) {
+                tile.reflect();
+                tile.reflected = 1;
+            }
 
             // If this is the first tile placed...
             if (tilesPlaced == 0) {
@@ -194,7 +199,7 @@ public class Generator {
                             if (tilePlaced) {
                                 // Create a list of sideCells and cornerCells for this tile
                                 CreateSideAndCornerCellList(tile, color, redCornerCellArray[i]);
-                                System.out.println(color + ", " + redCornerCellArray[i][1] + ", " + redCornerCellArray[i][0]);
+                                //System.out.println(color + ", " + redCornerCellArray[i][1] + ", " + redCornerCellArray[i][0]);
                                 tilesPlaced += 1;
                                 break;
                             }
@@ -242,7 +247,7 @@ public class Generator {
                             if (tilePlaced) {
                                 // Create a list of sideCells and cornerCells for this tile
                                 CreateSideAndCornerCellList(tile, color, blueCornerCellArray[i]);
-                                System.out.println(color + ", " + blueCornerCellArray[i][1] + ", " + blueCornerCellArray[i][0]);
+                                //System.out.println(color + ", " + blueCornerCellArray[i][1] + ", " + blueCornerCellArray[i][0]);
                                 tilesPlaced += 1;
                                 break;
                             }
@@ -290,7 +295,7 @@ public class Generator {
                             if (tilePlaced) {
                                 // Create a list of sideCells and cornerCells for this tile
                                 CreateSideAndCornerCellList(tile, color, yellowCornerCellArray[i]);
-                                System.out.println(color + ", " + yellowCornerCellArray[i][1] + ", " + yellowCornerCellArray[i][0]);
+                                //System.out.println(color + ", " + yellowCornerCellArray[i][1] + ", " + yellowCornerCellArray[i][0]);
                                 tilesPlaced += 1;
                                 break;
                             }
@@ -307,6 +312,7 @@ public class Generator {
             CleanUpCornerAndSideCells("yellow");
 
             if (iterations == maxIterations) {
+                rotationsReflections = "";
                 return false;
             }
         }
@@ -332,6 +338,7 @@ public class Generator {
     }
 
     private void generateFile(int levelNumber) {
+        // Create board file
         try {
             // Create a new FileWriter object with name of level
             FileWriter myWriter = new FileWriter("levels/" + levelNumber + ".txt");
@@ -352,6 +359,21 @@ public class Generator {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
+
+        // Create tile orientation file
+        try {
+            // Create a new FileWriter object with name of level
+            FileWriter myWriter = new FileWriter("levels/" + levelNumber + "_orientations.txt");
+
+            // Write the string to the file
+            myWriter.write(rotationsReflections);
+            myWriter.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+        System.out.println(rotationsReflections);
     }
 
     public int[] getRandomLocationOnBoard(char[][] board) {
@@ -674,6 +696,15 @@ public class Generator {
 
         List<int[]> sideCellList = new ArrayList<int[]>();
         List<int[]> cornerCellList = new ArrayList<int[]>();
+
+        // Add the tile's orientation to the file
+        if (color == "red") {
+            rotationsReflections += redTileMap.get(tile.name).toString() + tile.rotations + tile.reflected;
+        } else if (color == "blue") {
+            rotationsReflections += blueTileMap.get(tile.name).toString() + tile.rotations + tile.reflected;
+        } else {
+            rotationsReflections += yellowTileMap.get(tile.name).toString() + tile.rotations + tile.reflected;
+        }
         
         for (int i = 0; i < tile.coords.length; i++) {
             int x = tile.coords[i][0];
@@ -732,7 +763,7 @@ public class Generator {
             for (int[] sideCell : sideCellList) {
                 if (cornerCell[0] == sideCell[0] && cornerCell[1] == sideCell[1]) {
                     valuesToRemove.add(cornerCell);
-                    System.out.println("corner cell removed");
+                    //System.out.println("corner cell removed");
                 }
             }
         }
