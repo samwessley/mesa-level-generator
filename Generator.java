@@ -40,6 +40,7 @@ public class Generator {
         generator.levelsToGenerate = scanner.nextInt();
 
         generator.generateLevels();
+        scanner.close();
     }
 
     public void generateLevels() {
@@ -108,21 +109,20 @@ public class Generator {
         while (tilesPlaced < tilesToPlace) {
 
             // Get a random red tile from the list
+            createTileArray();
             Tile tile = GetRandomTile(color);
-
-            // Rotate tile n times between 0 and 3
-            int rnd = new Random().nextInt(4);
-            tile.rotations = rnd;
-            for (int i = 0; i < rnd; i++) {
-                tile.rotate();
-            }
 
             // Decide randomly to flip tile or not
             Random rd = new Random();
             Boolean rd1 = rd.nextBoolean();
             if (rd1) {
                 tile.reflect();
-                tile.reflected = 1;
+            }
+
+            // Rotate tile n times between 0 and 3
+            int rnd = new Random().nextInt(4);
+            for (int i = 0; i < rnd; i++) {
+                tile.rotate();
             }
 
             // If this is the first tile placed...
@@ -130,19 +130,18 @@ public class Generator {
 
                 // Generate random location on the board
                 int[] randomCoords = getRandomLocationOnBoard(board);
-                //System.out.println("Random Board Coords: " + randomCoords[0] + ", " + randomCoords[1]);
 
                 boolean tilePlaced = true;
 
                 // Check each tile cell in the tile to make sure it's in a valid place
                 for (int i = 0; i < tile.coords.length; i++) {
-                    int x = tile.coords[i][0];
-                    int y = tile.coords[i][1];
+                    int x = tile.coords[i][1];
+                    int y = tile.coords[i][0];
 
                     // First check that the tile coords are within the board
-                    if ((randomCoords[0] + x) < board.length && (randomCoords[1] + y) < board[0].length && (randomCoords[0] + x) >= 0 && (randomCoords[1] + y) >= 0) {
+                    if ((randomCoords[1] + x) < board.length && (randomCoords[0] + y) < board[0].length && (randomCoords[1] + x) >= 0 && (randomCoords[0] + y) >= 0) {
                         // If the tile cell is covering an occupied cell, don't place the tile
-                        if (board[randomCoords[0] + x][randomCoords[1] + y] != '0') {
+                        if (board[randomCoords[1] + x][randomCoords[0] + y] != '0') {
                             //board[randomCoords[1] + x][randomCoords[0] + y] = redTileMap.get(tile.name);
                             tilePlaced = false;
                         }
@@ -174,13 +173,13 @@ public class Generator {
                             
                             // Check each tile cell in the tile to make sure it's in a valid place
                             for (int j = 0; j < tile.coords.length; j++) {
-                                int x = tile.coords[j][0];
-                                int y = tile.coords[j][1];
+                                int x = tile.coords[j][1];
+                                int y = tile.coords[j][0];
         
                                 // First check that the tile coords are within the board
-                                if ((redCornerCellArray[i][0] + x) < board.length && (redCornerCellArray[i][1] + y) < board[0].length && (redCornerCellArray[i][0] + x) >= 0 && (redCornerCellArray[i][1] + y) >= 0) {
+                                if ((redCornerCellArray[i][1] + x) < board.length && (redCornerCellArray[i][0] + y) < board[0].length && (redCornerCellArray[i][1] + x) >= 0 && (redCornerCellArray[i][0] + y) >= 0) {
                                     // If the tile cell is covering an occupied cell, don't place the tile
-                                    if (board[redCornerCellArray[i][0] + x][redCornerCellArray[i][1] + y] != '0') {
+                                    if (board[redCornerCellArray[i][1] + x][redCornerCellArray[i][0] + y] != '0') {
                                         tilePlaced = false;
                                     }
                                 } else {
@@ -189,7 +188,7 @@ public class Generator {
         
                                 // If the tile is touching any side cells, don't place it
                                 for (int[] sideCell : redSideCells) {
-                                    if (redCornerCellArray[i][0] + x == sideCell[0] && redCornerCellArray[i][1] + y == sideCell[1]) {
+                                    if (redCornerCellArray[i][1] + x == sideCell[1] && redCornerCellArray[i][0] + y == sideCell[0]) {
                                         tilePlaced = false;
                                     }
                                 }
@@ -199,7 +198,9 @@ public class Generator {
                             if (tilePlaced) {
                                 // Create a list of sideCells and cornerCells for this tile
                                 CreateSideAndCornerCellList(tile, color, redCornerCellArray[i]);
-                                //System.out.println(color + ", " + redCornerCellArray[i][1] + ", " + redCornerCellArray[i][0]);
+                                /*for (int j = 0; j < tile.coords.length; j++) {
+                                    System.out.print(tile.coords[j][0] + ", " + tile.coords[j][1] + "; ");
+                                }*/
                                 tilesPlaced += 1;
                                 break;
                             }
@@ -222,13 +223,13 @@ public class Generator {
                             
                             // Check each tile cell in the tile to make sure it's in a valid place
                             for (int j = 0; j < tile.coords.length; j++) {
-                                int x = tile.coords[j][0];
-                                int y = tile.coords[j][1];
+                                int x = tile.coords[j][1];
+                                int y = tile.coords[j][0];
         
                                 // First check that the tile coords are within the board
-                                if ((blueCornerCellArray[i][0] + x) < board.length && (blueCornerCellArray[i][1] + y) < board[0].length && (blueCornerCellArray[i][0] + x) >= 0 && (blueCornerCellArray[i][1] + y) >= 0) {
+                                if ((blueCornerCellArray[i][1] + x) < board.length && (blueCornerCellArray[i][0] + y) < board[0].length && (blueCornerCellArray[i][1] + x) >= 0 && (blueCornerCellArray[i][0] + y) >= 0) {
                                     // If the tile cell is covering an occupied cell, don't place the tile
-                                    if (board[blueCornerCellArray[i][0] + x][blueCornerCellArray[i][1] + y] != '0') {
+                                    if (board[blueCornerCellArray[i][1] + x][blueCornerCellArray[i][0] + y] != '0') {
                                         tilePlaced = false;
                                     }
                                 } else {
@@ -237,7 +238,7 @@ public class Generator {
         
                                 // If the tile is touching any side cells, don't place it
                                 for (int[] sideCell : blueSideCells) {
-                                    if (blueCornerCellArray[i][0] + x == sideCell[0] && blueCornerCellArray[i][1] + y == sideCell[1]) {
+                                    if (blueCornerCellArray[i][1] + x == sideCell[1] && blueCornerCellArray[i][0] + y == sideCell[0]) {
                                         tilePlaced = false;
                                     }
                                 }
@@ -270,13 +271,13 @@ public class Generator {
                             
                             // Check each tile cell in the tile to make sure it's in a valid place
                             for (int j = 0; j < tile.coords.length; j++) {
-                                int x = tile.coords[j][0];
-                                int y = tile.coords[j][1];
+                                int x = tile.coords[j][1];
+                                int y = tile.coords[j][0];
         
                                 // First check that the tile coords are within the board
-                                if ((yellowCornerCellArray[i][0] + x) < board.length && (yellowCornerCellArray[i][1] + y) < board[0].length && (yellowCornerCellArray[i][0] + x) >= 0 && (yellowCornerCellArray[i][1] + y) >= 0) {
+                                if ((yellowCornerCellArray[i][1] + x) < board.length && (yellowCornerCellArray[i][0] + y) < board[0].length && (yellowCornerCellArray[i][1] + x) >= 0 && (yellowCornerCellArray[i][0] + y) >= 0) {
                                     // If the tile cell is covering an occupied cell, don't place the tile
-                                    if (board[yellowCornerCellArray[i][0] + x][yellowCornerCellArray[i][1] + y] != '0') {
+                                    if (board[yellowCornerCellArray[i][1] + x][yellowCornerCellArray[i][0] + y] != '0') {
                                         tilePlaced = false;
                                     }
                                 } else {
@@ -285,7 +286,7 @@ public class Generator {
         
                                 // If the tile is touching any side cells, don't place it
                                 for (int[] sideCell : yellowSideCells) {
-                                    if (yellowCornerCellArray[i][0] + x == sideCell[0] && yellowCornerCellArray[i][1] + y == sideCell[1]) {
+                                    if (yellowCornerCellArray[i][1] + x == sideCell[1] && yellowCornerCellArray[i][0] + y == sideCell[0]) {
                                         tilePlaced = false;
                                     }
                                 }
@@ -313,21 +314,10 @@ public class Generator {
 
             if (iterations == maxIterations) {
                 rotationsReflections = "";
+                //createTileArray();
                 return false;
             }
         }
-        
-        /*// Print redSideCells
-        System.out.println("redSideCells:");
-        for (int[] coords : redSideCells) {
-            System.out.println(coords[1] + ", " + coords[0]);
-        }
-
-        // Print redCornerCells
-        System.out.println("redCornerCells:");
-        for (int[] coords : redCornerCells) {
-            System.out.println(coords[1] + ", " + coords[0]);
-        }*/
 
         if (tilesPlaced < tilesToPlace) {
             System.out.println("Could not generate board.");
@@ -372,8 +362,8 @@ public class Generator {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
-
         System.out.println(rotationsReflections);
+        rotationsReflections = "";
     }
 
     public int[] getRandomLocationOnBoard(char[][] board) {
@@ -410,7 +400,7 @@ public class Generator {
         board = new char[size][size];
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[0].length; j++) {
-                board[i][j] = '0';
+                board[j][i] = '0';
             }
         }
     }
@@ -470,8 +460,8 @@ public class Generator {
         yellowTileMap.put(8,'Y');
         yellowTileMap.put(9,'z');
         yellowTileMap.put(10,'Z');
-        yellowTileMap.put(11,'2');
-        yellowTileMap.put(12,'3');
+        yellowTileMap.put(11,'=');
+        yellowTileMap.put(12,'*');
         yellowTileMap.put(13,'4');
         yellowTileMap.put(14,'5');
         yellowTileMap.put(15,'6');
@@ -487,23 +477,23 @@ public class Generator {
         tiles[0] = new Tile(1, new int[][]{{0,0}});
         tiles[1] = new Tile(2, new int[][]{{0,0},{1,0}});
         tiles[2] = new Tile(3, new int[][]{{0,0},{1,0},{2,0}});
-        tiles[3] = new Tile(4, new int[][]{{0,0},{1,0},{1,1}});
+        tiles[3] = new Tile(4, new int[][]{{0,0},{0,1},{1,1}});
         tiles[4] = new Tile(5, new int[][]{{0,0},{1,0},{2,0},{3,0}});
-        tiles[5] = new Tile(6, new int[][]{{0,0},{1,0},{2,0},{2,1}});
-        tiles[6] = new Tile(7, new int[][]{{0,0},{1,0},{2,0},{1,-1}});
-        tiles[7] = new Tile(8, new int[][]{{0,0},{1,0},{0,-1},{1,-1}});
+        tiles[5] = new Tile(6, new int[][]{{0,0},{0,1},{1,1},{2,1}});
+        tiles[6] = new Tile(7, new int[][]{{0,0},{-1,1},{0,1},{1,1}});
+        tiles[7] = new Tile(8, new int[][]{{0,0},{1,0},{0,1},{1,1}});
         tiles[8] = new Tile(9, new int[][]{{0,0},{1,0},{1,-1},{2,-1}});
         tiles[9] = new Tile(10, new int[][]{{0,0},{1,0},{2,0},{3,0},{4,0}});
         tiles[10] = new Tile(11, new int[][]{{0,0},{1,0},{2,0},{3,0},{3,-1}});
         tiles[11] = new Tile(12, new int[][]{{0,0},{1,0},{2,0},{2,-1},{3,-1}});
         tiles[12] = new Tile(13, new int[][]{{0,0},{1,0},{2,0},{1,-1},{2,-1}});
-        tiles[13] = new Tile(14, new int[][]{{0,0},{2,0},{0,-1},{1,-1},{2,-1}});
+        tiles[13] = new Tile(14, new int[][]{{0,0},{2,0},{0,1},{1,1},{2,1}});
         tiles[14] = new Tile(15, new int[][]{{0,0},{1,0},{2,0},{3,0},{1,-1}});
-        tiles[15] = new Tile(16, new int[][]{{0,0},{1,0},{2,0},{2,1},{2,-1}});
-        tiles[16] = new Tile(17, new int[][]{{0,0},{0,-1},{0,-2},{1,-2},{2,-2}});
-        tiles[17] = new Tile(18, new int[][]{{0,0},{1,0},{1,-1},{2,-1},{2,-2}});
-        tiles[18] = new Tile(19, new int[][]{{0,0},{0,-1},{1,-1},{2,-1},{2,-2}});
-        tiles[19] = new Tile(20, new int[][]{{0,0},{0,-1},{1,-1},{2,-1},{1,-2}});
+        tiles[15] = new Tile(16, new int[][]{{0,0},{0,1},{0,2},{-1,2},{1,2}});
+        tiles[16] = new Tile(17, new int[][]{{0,0},{0,1},{0,2},{1,2},{2,2}});
+        tiles[17] = new Tile(18, new int[][]{{0,0},{1,0},{1,-1},{2,-1},{0,1}});
+        tiles[18] = new Tile(19, new int[][]{{0,0},{1,0},{2,0},{0,1},{2,-1}});
+        tiles[19] = new Tile(20, new int[][]{{0,0},{0,1},{1,1},{2,1},{1,2}});
         tiles[20] = new Tile(21, new int[][]{{0,0},{1,0},{2,0},{1,1},{1,-1}});
     }
 
@@ -580,14 +570,14 @@ public class Generator {
         List<int[]> cornerCellsToTest = new ArrayList<int[]>();
 
         // Gather all the corner adjacent cells for this grid cell
-        if (x - 1 >= 0 && y - 1 >= 0)
-            cornerCellsToTest.add(new int[] {x - 1, y - 1});
-        if (x + 1 < boardSize && y - 1 >= 0)
-            cornerCellsToTest.add(new int[] {x + 1, y - 1});
-        if (x - 1 >= 0 && y + 1 < boardSize)
-            cornerCellsToTest.add(new int[] {x - 1, y + 1});
-        if (x + 1 < boardSize && y + 1 < boardSize)
-            cornerCellsToTest.add(new int[] {x + 1, y + 1});
+        if (y - 1 >= 0 && x - 1 >= 0)
+            cornerCellsToTest.add(new int[] {y - 1, x - 1});
+        if (y + 1 < boardSize && x - 1 >= 0)
+            cornerCellsToTest.add(new int[] {y + 1, x - 1});
+        if (y - 1 >= 0 && x + 1 < boardSize)
+            cornerCellsToTest.add(new int[] {y - 1, x + 1});
+        if (y + 1 < boardSize && x + 1 < boardSize)
+            cornerCellsToTest.add(new int[] {y + 1, x + 1});
 
         return cornerCellsToTest;
     }
@@ -597,14 +587,14 @@ public class Generator {
         List<int[]> sideCellsToTest = new ArrayList<int[]>();
 
         // Gather all the side adjacent cells for this grid cell
-        if (x - 1 >= 0)
-            sideCellsToTest.add(new int[] {x - 1, y});
-        if (x + 1 < boardSize)
-            sideCellsToTest.add(new int[] {x + 1, y});
         if (y - 1 >= 0)
-            sideCellsToTest.add(new int[] {x, y - 1});
+            sideCellsToTest.add(new int[] {y - 1, x});
         if (y + 1 < boardSize)
-            sideCellsToTest.add(new int[] {x, y + 1});
+            sideCellsToTest.add(new int[] {y + 1, x});
+        if (x - 1 >= 0)
+            sideCellsToTest.add(new int[] {y, x - 1});
+        if (x + 1 < boardSize)
+            sideCellsToTest.add(new int[] {y, x + 1});
 
         return sideCellsToTest;
     }
@@ -625,7 +615,7 @@ public class Generator {
         // Remove occupied cells from sideCells
         List<int[]> sideCellsToRemove = new ArrayList<int[]>();
         for (int[] sideCell : sideCells) {
-            if (board[sideCell[0]][sideCell[1]] != '0')
+            if (board[sideCell[1]][sideCell[0]] != '0')
             sideCellsToRemove.add(sideCell);
         }
         if (color == "red") {
@@ -639,7 +629,7 @@ public class Generator {
         // Remove occupied cells from cornerCells
         List<int[]> cornerCellsToRemove = new ArrayList<int[]>();
         for (int[] cornerCell : cornerCells) {
-            if (board[cornerCell[0]][cornerCell[1]] != '0')
+            if (board[cornerCell[1]][cornerCell[0]] != '0')
             cornerCellsToRemove.add(cornerCell);
         }
         if (color == "red") {
@@ -707,37 +697,36 @@ public class Generator {
         }
         
         for (int i = 0; i < tile.coords.length; i++) {
-            int x = tile.coords[i][0];
-            int y = tile.coords[i][1];
+            int x = tile.coords[i][1];
+            int y = tile.coords[i][0];
 
             // Get all corner cells and add to cornerCellList
-            cornerCellList.addAll(getCornerAdjacentCells(randomCoords[0] + x, randomCoords[1] + y));
+            cornerCellList.addAll(getCornerAdjacentCells(randomCoords[1] + x, randomCoords[0] + y));
 
             // Get all side cells and add to sideCellList
-            sideCellList.addAll(getSideAdjacentCells(randomCoords[0] + x, randomCoords[1] + y));
+            sideCellList.addAll(getSideAdjacentCells(randomCoords[1] + x, randomCoords[0] + y));
             
             // Check that the tile coords are within the board
-            if ((randomCoords[0] + x) < board.length && (randomCoords[1] + y) < board[0].length && (randomCoords[0] + x) >= 0 && (randomCoords[1] + y) >= 0) {
-                if (board[randomCoords[0] + x][randomCoords[1] + y] == '0') {
+            if ((randomCoords[1] + x) < board.length && (randomCoords[0] + y) < board[0].length && (randomCoords[1] + x) >= 0 && (randomCoords[0] + y) >= 0) {
+                if (board[randomCoords[1] + x][randomCoords[0] + y] == '0') {
                     // Set the board coords to the tile name
 
                     if (color == "red") {
-                        board[randomCoords[0] + x][randomCoords[1] + y] = redTileMap.get(tile.name);
-
+                        board[randomCoords[1] + x][randomCoords[0] + y] = redTileMap.get(tile.name);
+                        
                         // Remove that tile number from the list
                         redTileNumbers.remove(Integer.valueOf(tile.name));
                     } else if (color == "blue") {
-                        board[randomCoords[0] + x][randomCoords[1] + y] = blueTileMap.get(tile.name);
+                        board[randomCoords[1] + x][randomCoords[0] + y] = blueTileMap.get(tile.name);
 
                         // Remove that tile number from the list
                         blueTileNumbers.remove(Integer.valueOf(tile.name));                        
                     } else {
-                        board[randomCoords[0] + x][randomCoords[1] + y] = yellowTileMap.get(tile.name);
+                        board[randomCoords[1] + x][randomCoords[0] + y] = yellowTileMap.get(tile.name);
 
                         // Remove that tile number from the list
                         yellowTileNumbers.remove(Integer.valueOf(tile.name));                         
                     }
-
                 }
             }
         }
@@ -748,10 +737,10 @@ public class Generator {
         for (int g = 0; g < cornerCellListArray.length; g++) {
             for (int j = 0; j < tile.coords.length; j++) {
 
-                int x = tile.coords[j][0];
-                int y = tile.coords[j][1];
+                int x = tile.coords[j][1];
+                int y = tile.coords[j][0];
 
-                if (cornerCellListArray[g][0] == (randomCoords[0] + x) && cornerCellListArray[g][1] == (randomCoords[1] + y)) {
+                if (cornerCellListArray[g][1] == (randomCoords[1] + x) && cornerCellListArray[g][0] == (randomCoords[0] + y)) {
                     cornerCellList.remove(cornerCellListArray[g]);
                 }
             }
